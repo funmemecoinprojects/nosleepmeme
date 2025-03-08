@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$NOSLEEP Surprise</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+        }
+        .surprise-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .fullscreen-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Changed from cover to contain to prevent stretching */
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: black; /* Ensures black background if image doesn't fill screen */
+        }
+        .redirect-message {
+            position: absolute;
+            bottom: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="surprise-container">
+        <img src="assets/unicorn.jpg" alt="Magical Unicorn" class="fullscreen-image">
+        <audio id="unicornSound" autoplay loop>
+            <source src="assets/Unicornsound.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <div class="redirect-message">
+             <span id="countdown"></span>
+        </div>
+    </div>
+    
+    <script>
+        // Make sure audio plays
+        const audio = document.getElementById('unicornSound');
+        audio.volume = 0.7; // Set volume to 70%
+        
+        // Play audio with user interaction fallback
+        function attemptPlayAudio() {
+            audio.play().catch(error => {
+                console.error("Audio playback failed:", error);
+                // Add a message about audio playback
+                document.body.innerHTML += '<div style="position:fixed; top:10px; left:10px; background:rgba(0,0,0,0.7); color:white; padding:10px; border-radius:5px;">Click anywhere to enable sound</div>';
+                // Listen for any click on the page to start audio
+                document.addEventListener('click', function() {
+                    audio.play();
+                }, { once: true });
+            });
+        }
+        
+        attemptPlayAudio();
+        
+        // Countdown and redirect
+        let secondsLeft = 5;
+        const countdownElement = document.getElementById('countdown');
+        
+        const countdownInterval = setInterval(function() {
+            secondsLeft--;
+            countdownElement.textContent = secondsLeft;
+            
+            if (secondsLeft <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = 'congratulations.html';
+            }
+        }, 1000);
+        
+        // Also add a manual redirect after 6 seconds just in case
+        setTimeout(function() {
+            window.location.href = 'congratulations.html';
+        }, 6000);
+    </script>
+</body>
+</html>
