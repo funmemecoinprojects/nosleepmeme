@@ -57,6 +57,18 @@
         const audio = document.getElementById('unicornSound');
         audio.volume = 0.7; // Set volume to 70%
         
+        // Function to properly stop audio before redirect
+        function stopAudioAndRedirect() {
+            // Pause the audio
+            audio.pause();
+            // Remove the source and unload it
+            audio.removeAttribute('src');
+            audio.load();
+            
+            // Redirect to congratulations page
+            window.location.href = 'congratulations.html';
+        }
+        
         // Play audio with user interaction fallback
         function attemptPlayAudio() {
             audio.play().catch(error => {
@@ -82,14 +94,20 @@
             
             if (secondsLeft <= 0) {
                 clearInterval(countdownInterval);
-                window.location.href = 'congratulations.html';
+                stopAudioAndRedirect(); // Use our function instead of direct redirect
             }
         }, 1000);
         
         // Also add a manual redirect after 6 seconds just in case
-        setTimeout(function() {
-            window.location.href = 'congratulations.html';
+        // But clear it if the regular countdown works
+        const backupRedirectTimeout = setTimeout(function() {
+            stopAudioAndRedirect(); // Use our function instead of direct redirect
         }, 6000);
+        
+        // If the countdown completes, clear the backup timeout
+        window.addEventListener('beforeunload', function() {
+            clearTimeout(backupRedirectTimeout);
+        });
     </script>
 </body>
 </html>

@@ -178,10 +178,25 @@ function disconnectWallet() {
     }, 500);
 }
 
-// Function to start the experience
+// Function to start the experience with a counter
 function startExperience() {
-    console.log("Starting experience...");
-    window.location.href = 'surprise.html';
+    console.log("🚀 Starting experience and incrementing counter...");
+    
+    // Create Supabase client
+    const supabase = createSupabaseClient();
+    
+    // Increment the counter in Supabase using RPC (we'll create this next)
+    supabase.rpc('increment_visitor_counter', { counter_name: 'surprise_page' })
+        .then(result => {
+            console.log("Counter incremented", result);
+            // Navigate regardless of result
+            window.location.href = 'surprise.html';
+        })
+        .catch(error => {
+            console.error("Error incrementing counter:", error);
+            // Still navigate on error
+            window.location.href = 'surprise.html';
+        });
 }
 
 // Approach 1: Use event delegation on the document body

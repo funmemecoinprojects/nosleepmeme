@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Counter Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="lib/supabase.js"></script>
+    <style>
+        body { font-family: Arial; margin: 20px; line-height: 1.6; }
+        button { padding: 10px 15px; margin: 10px 0; cursor: pointer; }
+        .result { margin: 20px 0; padding: 10px; background: #f0f0f0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Counter Test Page</h1>
+    
+    <button id="incrementBtn">Increment Counter</button>
+    <button id="readBtn">Read Counter</button>
+    
+    <div class="result" id="result">Results will appear here</div>
+    
+    <script>
+        const resultElement = document.getElementById('result');
+        
+        // Increment button
+        document.getElementById('incrementBtn').addEventListener('click', async () => {
+            resultElement.textContent = "Incrementing...";
+            
+            try {
+                const supabase = createSupabaseClient();
+                const { data, error } = await supabase.rpc(
+                    'increment_visitor_counter', 
+                    { counter_name: 'surprise_page' }
+                );
+                
+                if (error) {
+                    resultElement.textContent = `Increment Error: ${error.message}`;
+                    console.error("Increment Error:", error);
+                } else {
+                    resultElement.textContent = `Incremented! New count: ${data}`;
+                    console.log("Increment result:", data);
+                }
+            } catch (e) {
+                resultElement.textContent = `Increment Exception: ${e.message}`;
+                console.error("Increment Exception:", e);
+            }
+        });
+        
+        // Read button
+        document.getElementById('readBtn').addEventListener('click', async () => {
+            resultElement.textContent = "Reading...";
+            
+            try {
+                const supabase = createSupabaseClient();
+                const { data, error } = await supabase
+                    .from('visitor_counter')
+                    .select('*')
+                    .eq('name', 'surprise_page');
+                
+                if (error) {
+                    resultElement.textContent = `Read Error: ${error.message}`;
+                    console.error("Read Error:", error);
+                } else if (data && data.length > 0) {
+                    resultElement.textContent = `Current count: ${data[0].count}`;
+                    console.log("Read data:", data);
+                } else {
+                    resultElement.textContent = "No data found";
+                    console.log("No data found");
+                }
+            } catch (e) {
+                resultElement.textContent = `Read Exception: ${e.message}`;
+                console.error("Read Exception:", e);
+            }
+        });
+    </script>
+</body>
+</html>

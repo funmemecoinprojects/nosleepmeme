@@ -8,6 +8,8 @@
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <script src="https://unpkg.com/@solana/wallet-adapter-base/lib/index.iife.js"></script>
     <script src="https://unpkg.com/@solana/wallet-adapter-wallets/lib/index.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="lib/supabase.js"></script>
     <style>
         /* Base styles */
         * {
@@ -44,10 +46,10 @@
             z-index: 0;
         }
 
-        /* Header styles */
+        /* Header styles - UPDATED TO USE GRID FOR PERFECT CENTERING */
         .header {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
             width: 100%;
             padding: 10px 0;
@@ -56,8 +58,9 @@
         }
 
         .logo-left {
-            width: 80px;
-            height: 80px;
+            width: 200px;
+            height: 200px;
+            justify-self: start;
         }
 
         .emoji-logo {
@@ -68,11 +71,13 @@
 
         .header-center {
             text-align: center;
+            width: 100%;
+            grid-column: 2;
         }
 
         .wallet-button {
-            display: flex;
-            justify-content: flex-end;
+            justify-self: end;
+            grid-column: 3;
         }
 
         .connect-btn, .disconnect-btn {
@@ -180,8 +185,8 @@
         }
 
         .meme-card {
-            width: 150px;
-            height: 150px;
+            width: 180px;
+            height: 180px;
             overflow: hidden;
         }
 
@@ -320,8 +325,26 @@
         /* Responsive */
         @media (max-width: 768px) {
             .header {
-                flex-direction: column;
-                gap: 15px;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 10px;
+            }
+            
+            .logo-left {
+                justify-self: center;
+                grid-row: 1;
+                grid-column: 1;
+            }
+            
+            .header-center {
+                grid-row: 2;
+                grid-column: 1;
+            }
+            
+            .wallet-button {
+                justify-self: center;
+                grid-row: 3;
+                grid-column: 1;
             }
             
             .title {
@@ -415,6 +438,27 @@
     </div>
 
     <script>
+        // Function to start the experience and increment counter
+        window.startExperienceWithCounter = function() {
+            console.log("Starting experience and incrementing counter...");
+            
+            // Create Supabase client
+            const supabase = createSupabaseClient();
+            
+            // Increment the counter
+            supabase.rpc('increment_visitor_counter', { counter_name: 'surprise_page' })
+                .then(result => {
+                    console.log("Counter incremented successfully:", result);
+                    // Navigate to surprise page
+                    window.location.href = 'surprise.html';
+                })
+                .catch(error => {
+                    console.error("Error incrementing counter:", error);
+                    // Still navigate even if counter fails
+                    window.location.href = 'surprise.html';
+                });
+        }
+
         // Canvas background setup
         const canvas = document.getElementById('backgroundCanvas');
         const ctx = canvas.getContext('2d');
@@ -705,7 +749,8 @@
                     
                     // Add click event to start button
                     this.startExperienceBtn.onclick = () => {
-                        window.location.href = 'surprise.html';
+                        // Use the counter function instead of direct navigation
+                        window.startExperienceWithCounter();
                     };
                     
                 } else {

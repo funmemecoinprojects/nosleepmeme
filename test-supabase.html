@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="lib/supabase.js"></script>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <button id="testBtn">Test Connection</button>
+    <div id="result">Click the button to test</div>
+    
+    <script>
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = "Testing...";
+            
+            try {
+                const supabase = createSupabaseClient();
+                const { data, error } = await supabase
+                    .from('visitor_counter')
+                    .select('*');
+                
+                if (error) {
+                    resultElement.textContent = `Error: ${error.message}`;
+                    console.error("Error:", error);
+                } else {
+                    resultElement.textContent = `Success! Found ${data.length} rows: ${JSON.stringify(data)}`;
+                    console.log("Data:", data);
+                }
+            } catch (e) {
+                resultElement.textContent = `Exception: ${e.message}`;
+                console.error("Exception:", e);
+            }
+        });
+    </script>
+</body>
+</html>

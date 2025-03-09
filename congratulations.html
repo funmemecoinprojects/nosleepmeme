@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$NOSLEEP Congratulations</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="lib/supabase.js"></script>
     <style>
         /* Base styles */
         * {
@@ -16,18 +18,19 @@
         body {
             background-color: #1a1a1a;
             color: white;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             position: relative;
         }
 
         .container {
             width: 100%;
-            min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
+            padding: 10px;
             position: relative;
             z-index: 1;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
         }
 
         /* Background canvas */
@@ -46,14 +49,14 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 10px 0;
+            padding: 5px 10px;
             position: relative;
             z-index: 2;
         }
 
         .logo-left {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
         }
 
         .header-center {
@@ -69,7 +72,7 @@
             background-color: #dc2626;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
@@ -77,39 +80,124 @@
             font-size: 14px;
         }
 
-        /* Congratulations content */
-        .congrats-content {
+        /* Main content grid layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr;
+            gap: 10px;
+            padding: 0 15px;
+            height: 100%;
+            max-height: calc(100vh - 150px);
+            align-items: center;
+        }
+
+        /* Left side content */
+        .left-content {
+            grid-column: 1;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .congrats-subtext {
+            font-size: 0.95rem;
+            color: #9ca3af;
+            margin-bottom: 15px;
+            max-width: 280px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* Title and central content */
+        .center-content {
+            grid-column: 2;
+            grid-row: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            margin-top: 60px;
-            flex-grow: 1;
         }
 
         .congrats-title {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
 
         .congrats-text {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
         }
 
-        .congrats-subtext {
+        /* Soy Boy Gif Container */
+        .soy-boy-container {
+            margin: 10px 0;
+            max-width: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+        }
+
+        .soy-boy-gif {
+            width: 100%;
+            display: block;
+        }
+
+        /* Right side content */
+        .right-content {
+            grid-column: 3;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Visitor Counter */
+        .visitor-counter {
+            padding: 10px;
+            background-color: rgba(20, 20, 20, 0.7);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            max-width: 220px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+        }
+
+        .visitor-counter-title {
+            font-weight: bold;
+            color: #9333ea;
+            margin-bottom: 3px;
+            font-size: 0.8rem;
+        }
+
+        .visitor-count {
+            font-weight: bold;
+            color: #22c55e;
             font-size: 1.1rem;
-            color: #9ca3af;
-            margin-bottom: 30px;
-            max-width: 600px;
+        }
+
+        /* Social links footer */
+        .footer {
+            padding: 15px 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .social-links {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin: 20px 0;
+            margin-bottom: 10px;
         }
 
         .social-link {
@@ -128,18 +216,54 @@
             transform: scale(1.1);
         }
 
+        /* Share on X button styles */
+        .share-on-x {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .share-x-button {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 8px 15px;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            position: relative;
+            z-index: 10;
+            font-weight: bold;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        .share-x-button:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+        }
+        
+        .share-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+
         .back-btn {
             background-color: #6b7280;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 30px;
             transition: transform 0.2s ease, background-color 0.2s ease;
             position: relative;
             z-index: 10;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
         .back-btn:hover {
@@ -147,19 +271,36 @@
             background-color: #4b5563;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
+        @media (max-width: 900px) {
+            .container {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
             }
             
-            .congrats-title {
-                font-size: 2.5rem;
+            .main-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                max-height: none;
             }
             
-            .social-links {
-                flex-wrap: wrap;
+            .center-content, .left-content, .right-content {
+                grid-column: 1;
+            }
+            
+            .center-content {
+                grid-row: 1;
+                margin-bottom: 20px;
+            }
+            
+            .left-content {
+                grid-row: 2;
+                margin-bottom: 20px;
+            }
+            
+            .right-content {
+                grid-row: 3;
+                margin-bottom: 20px;
             }
         }
     </style>
@@ -182,24 +323,103 @@
             </div>
         </div>
 
-        <!-- Congratulations Content -->
-        <div class="congrats-content">
-            <h1 class="congrats-title">Congratulations!</h1>
-            <p class="congrats-text">No sleep for you tonight! Keep trenching!</p>
+        <!-- Main Grid Layout -->
+        <div class="main-grid">
+            <!-- Left Side Content -->
+            <div class="left-content">
+                <p class="congrats-subtext">
+                    Surprise! Now buy more and promote $NOSLEEP so other fellow trenchers can also experience the jumpscare
+                </p>
+                
+                <div class="visitor-counter">
+                    <div class="visitor-counter-title">$NOSLEEP TRENCHER STATS</div>
+                    <p>You're trencher #<span id="visitorCount" class="visitor-count">...</span> to get jumscared!</p>
+                </div>
+            </div>
             
-            <p class="congrats-subtext">
-                Buy more $NOSLEEP so other fellow trenchers can also experience the jumpscare
-            </p>
+            <!-- Center Content -->
+            <div class="center-content">
+                <h1 class="congrats-title">Congratulations!</h1>
+                <p class="congrats-text">No sleep for you tonight!</p>
+                
+                <!-- Soy Boy GIF Centered -->
+                <div class="soy-boy-container">
+                    <img src="assets/soy-boy-point-point-soy-boy.gif" alt="Laughing At You" class="soy-boy-gif">
+                </div>
+                
+                <div class="share-on-x">
+                    <a id="shareOnXButton" href="#" target="_blank" class="share-x-button">
+                        <img src="assets/x-logo.png" alt="X" class="share-icon">
+                        <span>Share Experience</span>
+                    </a>
+                </div>
+            </div>
             
+            <!-- Right Side Content -->
+            <div class="right-content">
+                <button id="backToMainBtn" class="back-btn" onclick="window.location.href='index.html'">Back To Main Page</button>
+            </div>
+        </div>
+        
+        <!-- Footer with Social Links -->
+        <div class="footer">
             <div class="social-links">
                 <a href="https://x.com/OShmoo0" target="_blank" class="social-link"><img src="assets/x-logo.png" alt="X"></a>
                 <a href="https://t.me/nosleeppublicchannel" target="_blank" class="social-link"><img src="assets/telegram-logo.png" alt="Telegram"></a>
                 <a href="https://dexscreener.com/solana/" target="_blank" class="social-link"><img src="assets/dexscreener-logo.png" alt="Dexscreener"></a>
                 <a href="https://jup.ag/swap/SOL-" target="_blank" class="social-link"><img src="assets/jup-logo.png" alt="Jupiter"></a>
             </div>
-            
-            <button id="backToMainBtn" class="back-btn" onclick="window.location.href='index.html'">Back To Main Page</button>
         </div>
+        
+        <script>
+            // Function to update the Share on X link with the visitor count
+            function updateShareOnXLink(visitorCount) {
+                const shareButton = document.getElementById('shareOnXButton');
+                if (shareButton) {
+                    // Construct tweet text with the visitor count
+                    const tweetText = encodeURIComponent(
+                        `Thanks to $NOSLEEP, where I experienced the NOSLEEP experience, I can continue trenching. CA: Contract Address. Amount of trenchers that experienced nosleep: ${visitorCount}`
+                    );
+                    
+                    // Set the href attribute to the X intent URL with the tweet text
+                    shareButton.href = `https://x.com/intent/tweet?text=${tweetText}`;
+                    
+                    console.log("Share on X link updated with visitor count:", visitorCount);
+                }
+            }
+            
+            // Fetch the counter value when the page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("Fetching counter value...");
+                const supabase = createSupabaseClient();
+                
+                supabase
+                    .from('visitor_counter')
+                    .select('*')
+                    .eq('name', 'surprise_page')
+                    .then(response => {
+                        console.log("Counter response:", response);
+                        if (response.error) {
+                            console.error("Error fetching counter:", response.error);
+                            document.getElementById('visitorCount').textContent = "error";
+                        } else if (response.data && response.data.length > 0) {
+                            console.log("Counter data:", response.data[0]);
+                            const visitorCount = response.data[0].count;
+                            document.getElementById('visitorCount').textContent = visitorCount;
+                            
+                            // Update the Share on X link with the visitor count
+                            updateShareOnXLink(visitorCount);
+                        } else {
+                            console.error("No counter data found");
+                            document.getElementById('visitorCount').textContent = "not found";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Exception fetching counter:", error);
+                        document.getElementById('visitorCount').textContent = "error";
+                    });
+            });
+        </script>
     </div>
 
     <script>

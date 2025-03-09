@@ -221,6 +221,19 @@ body {
     transform: scale(1.05);
 }
 
+.visitor-counter {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    font-size: 1.1rem;
+}
+
+.visitor-counter span {
+    font-weight: bold;
+    color: #22c55e;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .header {
